@@ -4,8 +4,7 @@ const app = express();
 const port = 8000;
 const socket = require('socket.io');
 
-
-const tasks = [];
+const tasks = ['Shopping', 'Cleaning'];
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
@@ -15,5 +14,17 @@ const io = socket(server);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  io.to(socket.id).emit('updateData', 'For your eyes only!');
+  io.to(socket.id).emit('updateData', tasks);
+
+  socket.on('addTask', (task) => {
+    tasks.push(task);
+    socket.broadcast.emit('addTask', task);
+  });
+
+  socket.on('removeTask', (index) => {
+    tasks.splice(index, 1);
+    socket.broadcast.emit('removeTask', index);
+  });
+
+
 });
