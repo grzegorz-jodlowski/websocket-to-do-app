@@ -1,5 +1,6 @@
 import React from 'react';
 import io from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
 
 class App extends React.Component {
   state = {
@@ -11,30 +12,42 @@ class App extends React.Component {
     this.socket = io('http://localhost:8000');
     this.socket.on('updateData', (tasks) => this.setState({ ...this.state, tasks }));
     this.socket.on('addTask', (task) => this.addTask(task));
-    this.socket.on('removeTask', (id) => this.removeTask(id));
+    this.socket.on('removeTask', (taskId) => this.removeTask(taskId));
   }
 
-  removeTask(id, e) {
-    this.state.tasks.splice(id, 1);
-    this.setState({ ...this.state, tasks: this.state.tasks });
+  removeTask(taskId, e) {
+    const { state } = this;
+
+    this.setState({ ...state, tasks: state.tasks.filter(task => task.id !== taskId) });
 
     // emit removeTask request if removeTask comes from us
-    if (e) { this.socket.emit('removeTask', id) }
+    if (e) { this.socket.emit('removeTask', taskId) };
   }
 
   addTask(task) {
-    this.state.tasks.push(task);
-    this.setState({ ...this.state, tasks: this.state.tasks });
+    const { state } = this;
+
+    this.setState({
+      ...state,
+      tasks: [
+        ...state.tasks,
+        task,
+      ]
+    });
   }
 
   submitForm(e) {
+    const { state } = this;
+
     e.preventDefault();
-    this.addTask(this.state.taskName);
-    this.socket.emit('addTask', this.state.taskName);
-    this.setState({ ...this.state, taskName: '' });
+    const task = { name: state.taskName, id: uuidv4() }
+    this.setState({ ...state, taskName: '' }, () => this.addTask(task));
+    this.socket.emit('addTask', task);
   }
 
   render() {
+    const { state } = this;
+
     return (
       <div className="App">
 
@@ -46,8 +59,8 @@ class App extends React.Component {
           <h2>Tasks</h2>
 
           <ul className="tasks-section__list" id="tasks-list">
-            {this.state.tasks.map((task, i) =>
-              <li key={task} className="task">{task}<button className="btn btn--red" onClick={(e) => this.removeTask(i, e)}>Remove</button></li>
+            {state.tasks.map((task) =>
+              <li key={task.id} className="task">{task.name}<button className="btn btn--red" onClick={(e) => this.removeTask(task.id, e)}>Remove</button></li>
             )}
           </ul>
 
@@ -58,8 +71,8 @@ class App extends React.Component {
               type="text"
               placeholder="Type your description"
               id="task-name"
-              value={this.state.taskName}
-              onChange={(e) => this.setState({ ...this.state, taskName: e.target.value })} />
+              value={state.taskName}
+              onChange={(e) => this.setState({ ...state, taskName: e.target.value })} />
             <button className="btn" type="submit">Add</button>
           </form>
 
