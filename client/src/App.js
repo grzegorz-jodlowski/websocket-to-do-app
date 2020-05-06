@@ -11,8 +11,11 @@ class App extends React.Component {
     this.socket.on('updateData', (tasks) => this.setState({ tasks }));
   }
 
-  removeTask(i) {
-    console.log(i);
+  removeTask(id) {
+    this.state.tasks.splice(id, 1);
+    this.setState({ tasks: this.state.tasks }, () => console.log(this.state.tasks));
+
+    this.socket.emit('removeTask', id);
   }
 
   render() {
