@@ -2,9 +2,17 @@ import React from 'react';
 import io from 'socket.io-client';
 
 class App extends React.Component {
+  state = {
+    tasks: [],
+  }
+
   componentDidMount() {
     this.socket = io(`http://localhost:8000`);
-    this.socket.on('updateData', (message) => console.log(message));
+    this.socket.on('updateData', (tasks) => this.setState({ tasks }));
+  }
+
+  removeTask(i) {
+    console.log(i);
   }
 
   render() {
@@ -19,8 +27,9 @@ class App extends React.Component {
           <h2>Tasks</h2>
 
           <ul className="tasks-section__list" id="tasks-list">
-            <li className="task">Shopping <button className="btn btn--red">Remove</button></li>
-            <li className="task">Go out with a dog <button className="btn btn--red">Remove</button></li>
+            {this.state.tasks.map((task, i) =>
+              <li key={task} className="task">{task}<button className="btn btn--red" onClick={() => this.removeTask(i)}>Remove</button></li>
+            )}
           </ul>
 
           <form id="add-task-form">
