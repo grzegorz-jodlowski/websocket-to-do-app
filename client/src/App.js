@@ -8,15 +8,18 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = io(`http://localhost:8000`);
+    this.socket = io('http://localhost:8000');
     this.socket.on('updateData', (tasks) => this.setState({ ...this.state, tasks }));
+    this.socket.on('addTask', (task) => this.addTask(task));
+    this.socket.on('removeTask', (id) => this.removeTask(id));
   }
 
-  removeTask(id) {
+  removeTask(id, e) {
     this.state.tasks.splice(id, 1);
     this.setState({ ...this.state, tasks: this.state.tasks });
 
-    this.socket.emit('removeTask', id);
+    // emit removeTask request if removeTask comes from us
+    if (e) { this.socket.emit('removeTask', id) }
   }
 
   addTask(task) {
@@ -28,6 +31,7 @@ class App extends React.Component {
     e.preventDefault();
     this.addTask(this.state.taskName);
     this.socket.emit('addTask', this.state.taskName);
+    this.setState({ ...this.state, taskName: '' });
   }
 
   render() {
@@ -43,7 +47,7 @@ class App extends React.Component {
 
           <ul className="tasks-section__list" id="tasks-list">
             {this.state.tasks.map((task, i) =>
-              <li key={task} className="task">{task}<button className="btn btn--red" onClick={() => this.removeTask(i)}>Remove</button></li>
+              <li key={task} className="task">{task}<button className="btn btn--red" onClick={(e) => this.removeTask(i, e)}>Remove</button></li>
             )}
           </ul>
 
