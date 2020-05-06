@@ -19,6 +19,17 @@ class App extends React.Component {
     this.socket.emit('removeTask', id);
   }
 
+  addTask(task) {
+    this.state.tasks.push(task);
+    this.setState({ ...this.state, tasks: this.state.tasks });
+  }
+
+  submitForm(e) {
+    e.preventDefault();
+    this.addTask(this.state.taskName);
+    this.socket.emit('addTask', this.state.taskName);
+  }
+
   render() {
     return (
       <div className="App">
@@ -36,7 +47,7 @@ class App extends React.Component {
             )}
           </ul>
 
-          <form id="add-task-form">
+          <form id="add-task-form" onSubmit={(e) => this.submitForm(e)}>
             <input
               className="text-input"
               autoComplete="off"
