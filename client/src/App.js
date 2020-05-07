@@ -10,7 +10,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.socket = io('http://localhost:8000');
-    this.socket.on('updateData', (tasks) => this.setState({ ...this.state, tasks }));
+    this.socket.on('updateData', (tasks) => this.setState({ tasks }));
     this.socket.on('addTask', (task) => this.addTask(task));
     this.socket.on('removeTask', (taskId) => this.removeTask(taskId));
   }
@@ -18,7 +18,7 @@ class App extends React.Component {
   removeTask(taskId, e) {
     const { state } = this;
 
-    this.setState({ ...state, tasks: state.tasks.filter(task => task.id !== taskId) });
+    this.setState({ tasks: state.tasks.filter(task => task.id !== taskId) });
 
     // emit removeTask request if removeTask comes from us
     if (e) { this.socket.emit('removeTask', taskId) };
@@ -27,13 +27,7 @@ class App extends React.Component {
   addTask(task) {
     const { state } = this;
 
-    this.setState({
-      ...state,
-      tasks: [
-        ...state.tasks,
-        task,
-      ]
-    });
+    this.setState({ tasks: [...state.tasks, task,] });
   }
 
   submitForm(e) {
@@ -41,7 +35,8 @@ class App extends React.Component {
 
     e.preventDefault();
     const task = { name: state.taskName, id: uuidv4() }
-    this.setState({ ...state, taskName: '' }, () => this.addTask(task));
+    this.addTask(task);
+    this.setState({ taskName: '' });
     this.socket.emit('addTask', task);
   }
 
@@ -72,7 +67,7 @@ class App extends React.Component {
               placeholder="Type your description"
               id="task-name"
               value={state.taskName}
-              onChange={(e) => this.setState({ ...state, taskName: e.target.value })} />
+              onChange={(e) => this.setState({ taskName: e.target.value })} />
             <button className="btn" type="submit">Add</button>
           </form>
 
