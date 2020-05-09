@@ -9,7 +9,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = io('http://localhost:8000');
+    this.socket = io((process.env.NODE_ENV === 'production') ? '' : 'http://localhost:8000');
     this.socket.on('updateData', (tasks) => this.setState({ tasks }));
     this.socket.on('addTask', (task) => this.addTask(task));
     this.socket.on('removeTask', (taskId) => this.removeTask(taskId));
