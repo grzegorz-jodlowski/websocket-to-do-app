@@ -1,5 +1,5 @@
 <p align="center">
-<a href="#"><img src="./to-do-websocket.gif" title="todo-websocket" alt="snippet of working to do list in browser."></a>
+<a href="https://to-do-websocket-app.herokuapp.com/"><img src="./to-do-websocket.gif" title="todo-websocket" alt="snippet of working to do list in browser."></a>
 </p>
 
 
@@ -22,7 +22,7 @@
 
 ## <a name="about"></a>What's this project about?
 
-This is a w
+This is a React to-do list application. I hope that no other panda has died through the next to-do list app 😁 The application is based on WebSocket communication. Allows to add and remove tasks in real time.
 
 </br>
 
@@ -39,16 +39,57 @@ This is a w
 
 ## <a name="what"></a>What I learned?
 
-- create  [create](https://create-react-app.dev/),
+- work with more than one server (webpack-dev-server and express server) in the context of WebSocks,
+- use the more advanced features of Socket.io,
+- work with more complex data,
+- use the [uuid](https://www.npmjs.com/package/uuid)package to add universally unique identifiers to the collection elements,
+- use references to constant `io` in various files (Socket.io).
 
 
 
 </br>
 
 ## <a name="interesting"></a>Interesting code snippet (for me of course 😉)
-- se:
+- client-side socket setup::
 
 ```js
+import io from 'socket.io-client';
+
+...
+...
+
+  componentDidMount() {
+    this.socket = io((process.env.NODE_ENV === 'production') ? '' : 'http://localhost:8000');
+    this.socket.on('updateData', (tasks) => this.setState({ tasks }));
+    this.socket.on('addTask', (task) => this.addTask(task));
+    this.socket.on('removeTask', (taskId) => this.removeTask(taskId));
+  }
+
+  removeTask(taskId, e) {
+    const { state } = this;
+
+    this.setState({ tasks: state.tasks.filter(task => task.id !== taskId) });
+
+    // emit removeTask request if removeTask comes from us
+    if (e) { this.socket.emit('removeTask', taskId) };
+  }
+
+  addTask(task) {
+    const { state } = this;
+
+    this.setState({ tasks: [...state.tasks, task,] });
+  }
+
+  submitForm(e) {
+    const { state } = this;
+
+    e.preventDefault();
+    const task = { name: state.taskName, id: uuidv4() }
+    this.addTask(task);
+    this.setState({ taskName: '' });
+    this.socket.emit('addTask', task);
+  }
+
 
 ```
 
@@ -93,7 +134,7 @@ yarn start
 
 
 ## <a name="site"></a>Website (on Heroku)
-[ToDoList.app](https://)
+[ToDoList.app](https://to-do-websocket-app.herokuapp.com/)
 - if the page loads slowly, wait a moment, the server is waking up because it is hosted on a free platform Heroku.
 
 </br>
