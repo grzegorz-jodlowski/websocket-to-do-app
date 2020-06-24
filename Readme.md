@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://to-do-websocket-app.herokuapp.com/"><img src="./to-do-websocket.gif" title="todo-websocket" alt="snippet of working to do list in browser."></a>
+<a href="https://to-do-websocket-app.herokuapp.com/"><img src="img/to-do-websocket.gif" title="todo-websocket" alt="snippet of working to do list in browser."></a>
 </p>
 
 
@@ -12,7 +12,7 @@
 ## Table of Contents
 
 - [What's this project about?](#about)
-- [Technologies used](#technologies)
+- [Technologies used](#tech)
 - [What I learned?](#what)
 - [Interesting code snippet](#interesting)
 - [Installation and quick start](#install)
@@ -26,7 +26,7 @@ This is a React to-do list application. I hope that no other panda has died thro
 
 </br>
 
-## <a name="technologies"></a>Technologies used
+## <a name="tech"></a>Technologies used
 - HTML
 - CSS
 - JavaScript
